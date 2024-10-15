@@ -1,9 +1,10 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import './App.css'
-import Home from './pages/Home'
-import Register from './pages/Register'
-import Login from './pages/Login'
-import VerifyEmailOtp from './pages/VerifyEmailOtp'
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import "./App.css";
+import Home from "./pages/Home";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import VerifyEmailOtp from "./pages/VerifyEmailOtp";
+import { Navbar } from "./components/pages-components/Navbar";
 
 const router = createBrowserRouter([
   // Home route
@@ -11,29 +12,40 @@ const router = createBrowserRouter([
     path: "/",
     element: (
       <>
-      <Home />
+        <Navbar />
+        <Home />
       </>
-    )
+    ),
   },
   // Register route
   {
     path: "/register",
-    element: <Register />
+    element: (
+      <>
+        <Navbar />
+        <Register />
+      </>
+    ),
   },
   // Loging route
   {
     path: "/login",
-    element: <Login />
+    element: (
+      <>
+      <Navbar />
+      <Login />
+      </>
+    )
   },
   // Verify email otp form
   {
     path: "/verify-otp",
-    element: <VerifyEmailOtp />
-  }
-])
+    element: <VerifyEmailOtp />,
+  },
+]);
 
 function App() {
-  return <RouterProvider  router={router}/> 
+  return <RouterProvider router={router} />;
 }
 
-export default App
+export default App;
