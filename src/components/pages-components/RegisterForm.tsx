@@ -1,25 +1,75 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Loader2 } from "lucide-react";
-import {useNavigate} from "react-router-dom"
-useNavigate
+import { useNavigate } from "react-router-dom";
+useNavigate;
 
 interface formFields {
+  username: string;
   email: string;
   password: string;
 }
 export const RegisterForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate()
+  const [usernameAvailable, setUsernameAvailable] = useState(false)
+  const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
     reset,
+    setError,
+    clearErrors,
+    setValue,
     formState: { errors },
   } = useForm<formFields>();
+
+  const handleUsernameChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setUsernameAvailable(false)
+    // grab the username
+    const username = e.target.value;
+    console.log(username);
+    // set username to react hook form register
+    setValue("username", username);
+    // check the length
+    if (username.length < 4) {
+      setError("username", {
+        message: "Should be minimum 4 character long.",
+      });
+      return;
+    } else {
+      // clear the error if > 4
+      clearErrors("username");
+    }
+    // send api req
+    try {
+      console.log("hitting");
+      const apiReq = await fetch(
+        "http://localhost:3333/api/v1/checkusernameUnique",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username }),
+          credentials: "include",
+        }
+      );
+      const apiRes = await apiReq.json();
+      if (apiRes.success === false) {
+        setError("username", {message: "Username is not available"})
+      }
+      setUsernameAvailable(true)
+      console.log(apiRes);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
 
   const onSubmit: SubmitHandler<formFields> = async (data) => {
     setIsSubmitting(true);
@@ -37,7 +87,7 @@ export const RegisterForm = () => {
       const apiResponse = await sendReq.json();
       console.log(apiResponse);
       if (apiResponse.success === true) {
-        navigate("/verify-otp")
+        navigate("/verify-otp");
       }
     } catch (error) {
       console.log(error);
@@ -48,6 +98,30 @@ export const RegisterForm = () => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col justify-center items-center min-h-screen space-y-3">
         <h2 className="text-3xl font-semibold">Register</h2>
+        <div>
+          <label className="flex">Username</label>
+          <Input
+            type="text"
+            placeholder="Username"
+            {...register("username", {
+              required: { value: true, message: "Username id is required" },
+              minLength: {
+                value: 4,
+                message: "Username should be 4 minimun characters.",
+              },
+            })}
+            className="w-96 focus:bg-zinc-950  focus:border-none transition-all"
+            onChange={handleUsernameChange}
+          />
+          {errors.username && (
+            <p className="text-red-500 font-semibold">
+              {errors.username.message}
+            </p>
+          )}
+          {usernameAvailable && (
+            <p className="text-green-600 text-sm font-semibold">Username available!!</p>
+          )}
+        </div>
         <div>
           <label className="flex">Email</label>
           <Input

@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react";
 import {useNavigate} from "react-router-dom"
 
 interface formFields {
-    email: string;
+    usernameOrEmail: string;
     password: string;
 }
 
@@ -46,12 +46,12 @@ export const LoginForm = () => {
         <div>
           <label className="flex">Email</label>
           <Input
-            type="email"
-            placeholder="Email"
-            {...register("email", {required: {value: true, message: "Email is required"}}) }
+            type="text"
+            placeholder="Username or email"
+            {...register("usernameOrEmail", {required: {value: true, message: "Email is required"}}) }
             className="w-96 focus:bg-zinc-950  focus:border-none transition-all"
           />
-          {errors.email && <p className="text-red-500 font-semibold">{errors.email.message}</p>}
+          {errors.usernameOrEmail && <p className="text-red-500 font-semibold">{errors.usernameOrEmail.message}</p>}
         </div>
         <div>
           <label className="flex">Password</label>

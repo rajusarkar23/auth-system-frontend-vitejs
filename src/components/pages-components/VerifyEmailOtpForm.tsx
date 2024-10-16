@@ -34,6 +34,7 @@ export const VerifyEmailOtpForm = () => {
         if (apiRes.success === true) {
           navigate("/profile")
         }
+        Cookies.remove("verifyEmailToken")
         console.log(apiRes);
         
     } catch (error) {
