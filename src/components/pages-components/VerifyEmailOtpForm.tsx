@@ -8,11 +8,13 @@ import {
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import Cookies from "js-cookie";
+import {useNavigate} from "react-router-dom"
 
 export const VerifyEmailOtpForm = () => {
   const [value, setValue] = useState("");
   const [verifying, setVerifying] = useState(false)
   const authToken = Cookies.get("verifyEmailToken")
+  const navigate = useNavigate()
   
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -29,6 +31,9 @@ export const VerifyEmailOtpForm = () => {
         })
         const apiRes = await sendReq.json()
         setVerifying(false)
+        if (apiRes.success === true) {
+          navigate("/profile")
+        }
         console.log(apiRes);
         
     } catch (error) {
@@ -59,7 +64,7 @@ export const VerifyEmailOtpForm = () => {
           </InputOTPGroup>
         </InputOTP>
       <div>
-        {verifying ? (<Button><Loader2 className="mr-2 h-4 animate-spin"/> Please wait...</Button>) : (<Button variant={"secondary"} className="w-36">Verify</Button>)}
+        {verifying ? (<Button disabled><Loader2 className="mr-2 h-4 animate-spin"/> Please wait...</Button>) : (<Button variant={"secondary"} className="w-36">Verify</Button>)}
         
       </div>
       </div>

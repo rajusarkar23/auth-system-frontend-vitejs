@@ -5,6 +5,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import VerifyEmailOtp from "./pages/VerifyEmailOtp";
 import { Navbar } from "./components/pages-components/Navbar";
+import Profile from "./pages/Profile";
 
 const router = createBrowserRouter([
   // Home route
@@ -42,6 +43,16 @@ const router = createBrowserRouter([
     path: "/verify-otp",
     element: <VerifyEmailOtp />,
   },
+  // Profile page
+  {
+    path: "/profile",
+    element: (
+      <>
+      <Navbar />
+      <Profile />
+      </>
+    )
+  }
 ]);
 
 function App() {
