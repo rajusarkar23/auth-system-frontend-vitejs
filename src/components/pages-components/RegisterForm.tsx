@@ -4,6 +4,7 @@ import { Button } from "../ui/button";
 import React, { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Oauth } from "./OAuth";
 useNavigate;
 
 interface formFields {
@@ -12,10 +13,11 @@ interface formFields {
   password: string;
 }
 export const RegisterForm = () => {
+  //  states
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [usernameAvailable, setUsernameAvailable] = useState(false)
   const navigate = useNavigate();
-
+  // useform fields errors, values
   const {
     register,
     handleSubmit,
@@ -25,7 +27,7 @@ export const RegisterForm = () => {
     setValue,
     formState: { errors },
   } = useForm<formFields>();
-
+  // check user name
   const handleUsernameChange = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -62,6 +64,8 @@ export const RegisterForm = () => {
       const apiRes = await apiReq.json();
       if (apiRes.success === false) {
         setError("username", {message: "Username is not available"})
+        setUsernameAvailable(false)
+        return
       }
       setUsernameAvailable(true)
       console.log(apiRes);
@@ -69,8 +73,8 @@ export const RegisterForm = () => {
       console.log(error);
     }
   };
-
-
+  
+  // form submit
   const onSubmit: SubmitHandler<formFields> = async (data) => {
     setIsSubmitting(true);
     try {
@@ -93,6 +97,8 @@ export const RegisterForm = () => {
       console.log(error);
     }
   };
+
+  // google login
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -167,6 +173,9 @@ export const RegisterForm = () => {
               Register
             </Button>
           )}
+        </div>
+        <div>
+          <Oauth />
         </div>
       </div>
     </form>

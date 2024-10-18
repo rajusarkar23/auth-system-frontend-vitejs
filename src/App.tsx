@@ -6,6 +6,15 @@ import Login from "./pages/Login";
 import VerifyEmailOtp from "./pages/VerifyEmailOtp";
 import { Navbar } from "./components/pages-components/Navbar";
 import Profile from "./pages/Profile";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
+const GoogleAuthWrapper = () => {
+  return (
+    <GoogleOAuthProvider clientId="993013001927-j9mtbi0krufut6t355b5tnkdeov6khhm.apps.googleusercontent.com">
+      <Register></Register>
+    </GoogleOAuthProvider>
+  )
+}
 
 const router = createBrowserRouter([
   // Home route
@@ -24,7 +33,7 @@ const router = createBrowserRouter([
     element: (
       <>
         <Navbar />
-        <Register />
+        <GoogleAuthWrapper />
       </>
     ),
   },
