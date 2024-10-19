@@ -1,7 +1,13 @@
 import { useGoogleLogin } from "@react-oauth/google";
 import { Button } from "../ui/button";
+import { useNavigate } from "react-router";
+import Cookies from "js-cookie";
+
+
 
 export const Oauth = () => {
+
+  const navigate = useNavigate()
 
   const googleLogin = useGoogleLogin({
     flow: "implicit",
@@ -14,9 +20,27 @@ export const Oauth = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: tokenRes.access_token }),
       })
-      .then(response => response.json())
-      .then(data => console.log(data))
-      .catch(err => console.error(err))
+      .then((response) => {
+        if(!response){
+          return Promise.reject(new Error("Failed to authenticate"))
+        }
+        return response.json()
+      })
+      .then((data) => {
+        console.log(data);
+        if (data.success === false) {
+          console.log("Failed");
+          return
+        }
+        const cookie  = data.jwt_token
+        Cookies.set("sessionToken",cookie)
+        console.log(cookie);
+        
+        navigate("/profile")
+      })
+      .catch((error) => {
+        console.error("Error", error)
+      })
     },
     onError: (errorRes) => console.log(errorRes),
   });
