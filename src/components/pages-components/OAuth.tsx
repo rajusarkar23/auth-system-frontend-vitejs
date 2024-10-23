@@ -1,57 +1,57 @@
-import { useGoogleLogin } from "@react-oauth/google";
-import { Button } from "../ui/button";
-import { useNavigate } from "react-router";
-import Cookies from "js-cookie";
-
-
-
+import { app } from "@/firebase"
+import {getAuth, GoogleAuthProvider, signInWithPopup} from "firebase/auth"
+import { Button } from "../ui/button"
+import { useState } from "react"
+import { Loader2 } from "lucide-react"
+import { useNavigate } from "react-router"
 export const Oauth = () => {
-
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const navigate = useNavigate()
 
-  const googleLogin = useGoogleLogin({
-    flow: "implicit",
-    scope: "openid profile email",
-    onSuccess: (tokenRes) => {
-      console.log(tokenRes);
+  const handleClick = async () => {
+    setIsSubmitting(true)
+    try {
+      const provider = new GoogleAuthProvider()
+      const auth = getAuth(app)
+      const result = await signInWithPopup(auth, provider)
+      console.log(result);
       
-      fetch("http://localhost:3333/api/v1/googleauth", {
+      const apiReq = await fetch("http://localhost:3333/api/v1/googleauth", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: tokenRes.access_token }),
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          name: result.user.displayName,
+          email: result.user.email,
+        })
       })
-      .then((response) => {
-        if(!response){
-          return Promise.reject(new Error("Failed to authenticate"))
-        }
-        return response.json()
-      })
-      .then((data) => {
-        console.log(data);
-        if (data.success === false) {
-          console.log("Failed");
-          return
-        }
-        const cookie  = data.jwt_token
-        Cookies.set("sessionToken",cookie)
-        console.log(cookie);
-        
-        navigate("/profile")
-      })
-      .catch((error) => {
-        console.error("Error", error)
-      })
-    },
-    onError: (errorRes) => console.log(errorRes),
-  });
+      console.log(result.user.email);
+      
+      const apiRes = await apiReq.json()
+      setIsSubmitting(false)
 
-  return (
-    <>
-      <div>
-        <Button onClick={() => googleLogin()} type="button" className="w-96">
-          Continue with Google
-        </Button>
-      </div>
-    </>
-  );
-};
+      if (apiRes.success === true) {
+        navigate("/profile")
+      } else{
+        console.log("Something went wrong");
+        
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  return(
+    <div>
+      {
+        isSubmitting ? (
+          <Button type="button" className="w-96" disabled><Loader2 className="mr-2 h-4 animate-spin"/>Please wait...</Button>
+        ) : ( <Button className="w-96" onClick={handleClick} type="button"> Continue with google</Button>)
+      }
+     
+    </div>
+  )
+}
