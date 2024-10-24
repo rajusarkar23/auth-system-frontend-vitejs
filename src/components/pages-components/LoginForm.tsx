@@ -4,6 +4,7 @@ import { Input } from "../ui/input";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import {useNavigate} from "react-router-dom"
+import Cookies from "js-cookie";
 
 interface formFields {
     usernameOrEmail: string;
@@ -32,6 +33,8 @@ export const LoginForm = () => {
             console.log(apiRes);
             if (apiRes.success === true) {
               navigate("/profile")
+              const jwt = apiRes.jwt_token
+              Cookies.set("sessionToken",jwt)
             }
             
         } catch (error) {
